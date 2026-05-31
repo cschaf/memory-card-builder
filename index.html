@@ -711,32 +711,49 @@
     updateGridCSSVariables();
     renderAll();
 
-    // ── Mobile: adjust print preview scale based on screen width ──
+    // ── Mobile: scale print preview to fit screen, clip container to avoid extra scroll ──
     function updateMobileScale() {
-        const grids = document.querySelectorAll('.memory-grid');
+        const pages = document.querySelectorAll('.print-page');
         const vw = window.innerWidth;
         let scale;
         if (vw <= 768) {
-            // Fit ~2 cards (5.5cm each ≈ 208px at 96dpi) + gap into screen with padding
+            // Fit ~2 cards (5.5cm ≈ 208px at 96dpi) + gap + padding
             scale = Math.min(0.5, (vw - 32) / (2 * 208));
         } else if (vw <= 1024) {
             scale = Math.min(0.75, (vw - 64) / (2 * 208));
         } else {
             scale = 1;
         }
-        grids.forEach(g => g.style.transform = scale < 1 ? `scale(${scale})` : '');
-        if (scale < 1) {
-            grids.forEach(g => {
-                g.style.transformOrigin = 'top left';
-                g.style.width = `${100 / scale}%`;
-                g.style.marginBottom = `${-100 * (1 - scale)}px`;
-            });
-        } else {
-            grids.forEach(g => {
-                g.style.width = '';
-                g.style.marginBottom = '';
-            });
-        }
+
+        pages.forEach(page => {
+            const grid = page.querySelector('.memory-grid');
+            if (!grid) return;
+
+            if (scale < 1) {
+                // Reset to measure natural height
+                grid.style.transform = '';
+                grid.style.width = '';
+                grid.style.transformOrigin = '';
+                page.style.height = '';
+                page.style.overflow = '';
+                const naturalH = grid.offsetHeight;
+
+                // Apply scale
+                grid.style.transformOrigin = 'top left';
+                grid.style.transform = `scale(${scale})`;
+                grid.style.width = `${100 / scale}%`;
+
+                // Clip page to scaled height → no extra scroll
+                page.style.overflow = 'hidden';
+                page.style.height = `${Math.ceil(naturalH * scale)}px`;
+            } else {
+                grid.style.transform = '';
+                grid.style.width = '';
+                grid.style.transformOrigin = '';
+                page.style.height = '';
+                page.style.overflow = '';
+            }
+        });
     }
 
     window.addEventListener('resize', updateMobileScale);
