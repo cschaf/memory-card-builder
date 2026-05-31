@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Memory Karten – 6x6 cm mit Schneiderahmen</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: #eef2f5;
+            margin: 0;
+            padding: 2rem 1rem;
+            color: #0f172a;
+        }
+
+        .controls {
+            max-width: 1100px;
+            margin: 0 auto 2rem auto;
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            font-size: 1.7rem;
+            margin: 0 0 0.2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: #2563eb;
+            color: white;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
+        }
+
+        .sub {
+            color: #475569;
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+            margin: 0.5rem 0 1.5rem 0;
+        }
+
+        .upload-area {
+            margin-bottom: 2rem;
+        }
+
+        .file-label {
+            background: #3b82f6;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 3rem;
+            display: inline-block;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+            border: none;
+        }
+
+        .file-label:hover {
+            background: #2563eb;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .settings-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            background: #f8fafc;
+            padding: 1rem 1.2rem;
+            border-radius: 1.2rem;
+            margin: 1rem 0;
+            align-items: flex-end;
+        }
+
+        .setting {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            min-width: 130px;
+        }
+
+        .setting label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .setting input {
+            width: 130px;
+            padding: 0.3rem 0.5rem;
+            border-radius: 1rem;
+            border: 1px solid #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .checkbox-setting {
+            flex-direction: row;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .checkbox-setting label {
+            margin-bottom: 0;
+        }
+        .checkbox-setting input {
+            width: auto;
+        }
+
+        .thumb-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .thumb-item {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 0.6rem;
+            width: 110px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .thumb-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #eef2ff;
+            margin-bottom: 0.5rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .thumb-actions {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.4rem;
+        }
+
+        .thumb-actions button {
+            background: #e2e8f0;
+            border: none;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        .thumb-actions button.delete-btn {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .info-text {
+            background: #f1f5f9;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .download-btn {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 3rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 1rem;
+            margin-right: 1rem;
+        }
+
+        /* DRUCK-CONTAINER */
+        .print-container {
+            background: white;
+            padding: 0.5rem;
+            margin-top: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-left: 0.5rem;
+            border-left: 5px solid #3b82f6;
+        }
+
+        .print-page {
+            break-after: page;
+            page-break-after: always;
+            margin: 0;
+            padding: 0;
+        }
+
+        .print-page:last-child {
+            break-after: avoid;
+            page-break-after: avoid;
+        }
+
+        /* Memory Grid */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(2, var(--card-width, 5.5cm));
+            gap: var(--card-gap, 0.8cm);
+            justify-content: center;
+            background: white;
+            padding-top: var(--page-margin, 1cm);
+            padding-bottom: var(--page-margin, 1cm);
+            margin: 0 auto;
+        }
+
+        /* Jede Karte mit gepunktetem Rahmen rundherum */
+        .card {
+            width: var(--card-width, 5.5cm);
+            height: var(--card-width, 5.5cm);
+            background: #ffffff;
+            border-radius: 4px;
+            overflow: hidden;
+            break-inside: avoid;
+            page-break-inside: avoid;
+            position: relative;
+        }
+
+        /* Der Schneide-Rahmen: gepunktete Linie INNERHALB der Karte, 
+           aber als Border um das Bild herum. Damit er auf dem Papier sichtbar ist,
+           legen wir ihn auf das Bild. */
+        .card.has-cutline {
+            outline: 1px dashed #555;
+            outline-offset: 0px;
+        }
+        
+        /* Alternativer Ansatz: Ein Pseudoelement, das die Karte umrandet */
+        .card.has-cutline {
+            position: relative;
+        }
+        
+        .card.has-cutline::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px dashed #666;
+            border-radius: 2px;
+            pointer-events: none;
+            box-shadow: 0 0 0 0.5px rgba(0,0,0,0.05);
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .empty-hint {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+            background: #f1f5f9;
+            border-radius: 1rem;
+        }
+
+        /* DRUCK-STYLES */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .controls {
+                display: none;
+            }
+            .print-container {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                background: white;
+            }
+            .section-title {
+                display: none;
+            }
+            .print-page {
+                break-after: page;
+                page-break-after: always;
+                margin: 0;
+                padding: 0;
+            }
+            .memory-grid {
+                padding-top: var(--page-margin, 1cm);
+                padding-bottom: var(--page-margin, 1cm);
+                gap: var(--card-gap, 0.8cm);
+            }
+            .card {
+                box-shadow: none;
+            }
+            .card.has-cutline::after {
+                border: 1px dashed #888;
+            }
+            @page {
+                size: A4;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <h1>
+        🃏 Memory Karten Studio 
+        <span class="badge">6x6 cm mit Schneiderahmen</span>
+    </h1>
+    <div class="sub">
+        Bilder hochladen → Reihenfolge anpassen → Maße einstellen → jede Karte hat einen gestrichelten Rahmen zum Ausschneiden.
+    </div>
+
+    <div class="upload-area">
+        <label class="file-label">
+            📸 Bilder auswählen (mehrere möglich)
+            <input type="file" id="fileInput" accept="image/jpeg, image/png, image/jpg, image/webp" multiple>
+        </label>
+
+        <div class="settings-panel">
+            <div class="setting">
+                <label>📏 Kartengröße (cm)</label>
+                <input type="number" id="cardSizeCm" step="0.1" min="4.0" max="6.0" value="5.5">
+                <span>Endgröße der Karte</span>
+            </div>
+            <div class="setting">
+                <label>↔️ Abstand zwischen Karten (cm)</label>
+                <input type="number" id="cardGapCm" step="0.1" min="0.2" max="1.5" value="0.8">
+                <span>Platz zum Ausschneiden</span>
+            </div>
+            <div class="setting">
+                <label>📄 Seitenrand (cm)</label>
+                <input type="number" id="pageMarginCm" step="0.1" min="0.5" max="2.0" value="1.0">
+                <span>Rand oben & unten</span>
+            </div>
+            <div class="setting checkbox-setting">
+                <label>✂️ Schneiderahmen anzeigen</label>
+                <input type="checkbox" id="showCutline" checked>
+            </div>
+        </div>
+
+        <div id="thumbList" class="thumb-list"></div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+            <button class="download-btn" id="downloadHtmlBtn">💾 HTML-Datei herunterladen</button>
+            <span style="font-size:0.8rem; color:#475569;">← Speichert diese Seite als eigenständige HTML-Datei</span>
+        </div>
+
+        <div class="info-text">
+            ✂️ <strong>Schneiderahmen:</strong> Jede Karte hat einen <strong>gestrichelten Rahmen</strong> (2 mm Abstand zum Bildrand) – einfach entlang ausschneiden.<br>
+            Pro A4-Seite passen max. 8 Karten (2 Spalten, 4 Reihen). Bei mehr Karten automatisch neue Seiten.<br>
+            <strong>PDF erstellen:</strong> Strg+P / Cmd+P → „Als PDF speichern“ → Skalierung auf „Tatsächliche Größe“ (100 %).
+        </div>
+    </div>
+</div>
+
+<div class="print-container">
+    <div class="section-title">📄 Drucklayout – Memory Karten</div>
+    <div id="printPagesContainer"></div>
+</div>
+
+<script>
+    let imagesArray = [];
+    let nextId = 0;
+
+    const fileInput = document.getElementById('fileInput');
+    const thumbList = document.getElementById('thumbList');
+    const printPagesContainer = document.getElementById('printPagesContainer');
+    const cardSizeInput = document.getElementById('cardSizeCm');
+    const cardGapInput = document.getElementById('cardGapCm');
+    const pageMarginInput = document.getElementById('pageMarginCm');
+    const showCutlineCheckbox = document.getElementById('showCutline');
+
+    function updateGridCSSVariables() {
+        const cardSize = parseFloat(cardSizeInput.value);
+        const gap = parseFloat(cardGapInput.value);
+        const margin = parseFloat(pageMarginInput.value);
+        if (isNaN(cardSize)) return;
+        document.documentElement.style.setProperty('--card-width', `${cardSize}cm`);
+        document.documentElement.style.setProperty('--card-gap', `${gap}cm`);
+        document.documentElement.style.setProperty('--page-margin', `${margin}cm`);
+    }
+
+    // Schneidelinien für alle Karten ein-/ausschalten
+    function updateCutlines() {
+        const show = showCutlineCheckbox.checked;
+        const allCards = document.querySelectorAll('.card');
+        allCards.forEach(card => {
+            if (show) {
+                card.classList.add('has-cutline');
+            } else {
+                card.classList.remove('has-cutline');
+            }
+        });
+    }
+
+    function renderThumbnails() {
+        if (imagesArray.length === 0) {
+            thumbList.innerHTML = '<div style="color:#64748b; padding:1rem 0;">📭 Keine Bilder – lade welche hoch.</div>';
+            return;
+        }
+        thumbList.innerHTML = '';
+        imagesArray.forEach((img, idx) => {
+            const div = document.createElement('div');
+            div.className = 'thumb-item';
+            div.innerHTML = `
+                <img class="thumb-img" src="${img.url}" alt="Vorschau">
+                <div class="thumb-actions">
+                    <button class="move-up" ${idx === 0 ? 'disabled' : ''}>↑</button>
+                    <button class="move-down" ${idx === imagesArray.length-1 ? 'disabled' : ''}>↓</button>
+                    <button class="delete-btn">✖</button>
+                </div>
+                <div style="font-size:0.7rem; word-break:break-word;">${img.name}</div>
+            `;
+            div.querySelector('.move-up').addEventListener('click', () => moveImage(idx, idx-1));
+            div.querySelector('.move-down').addEventListener('click', () => moveImage(idx, idx+1));
+            div.querySelector('.delete-btn').addEventListener('click', () => deleteImage(idx));
+            thumbList.appendChild(div);
+        });
+    }
+
+    function moveImage(from, to) {
+        if (to < 0 || to >= imagesArray.length) return;
+        const newArr = [...imagesArray];
+        const [moved] = newArr.splice(from, 1);
+        newArr.splice(to, 0, moved);
+        imagesArray = newArr;
+        renderAll();
+    }
+
+    function deleteImage(index) {
+        const deleted = imagesArray[index];
+        if (deleted && deleted.url) URL.revokeObjectURL(deleted.url);
+        imagesArray.splice(index, 1);
+        renderAll();
+    }
+
+    function splitIntoPages(items, itemsPerPage = 8) {
+        const pages = [];
+        for (let i = 0; i < items.length; i += itemsPerPage) {
+            pages.push(items.slice(i, i + itemsPerPage));
+        }
+        return pages;
+    }
+
+    function renderPrintGrid() {
+        if (imagesArray.length === 0) {
+            printPagesContainer.innerHTML = '<div class="empty-hint">📭 Keine Bilder. Lade Bilder hoch, um das Memory-Raster zu erstellen.</div>';
+            return;
+        }
+
+        const itemsPerPage = 8;
+        const pages = splitIntoPages(imagesArray, itemsPerPage);
+        
+        printPagesContainer.innerHTML = '';
+        
+        pages.forEach((pageImages) => {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'print-page';
+            
+            const gridDiv = document.createElement('div');
+            gridDiv.className = 'memory-grid';
+            
+            pageImages.forEach(img => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                const picture = document.createElement('img');
+                picture.src = img.url;
+                picture.alt = img.name;
+                card.appendChild(picture);
+                gridDiv.appendChild(card);
+            });
+            
+            pageDiv.appendChild(gridDiv);
+            printPagesContainer.appendChild(pageDiv);
+        });
+        
+        // Schneidelinien nach dem Erstellen anwenden
+        updateCutlines();
+    }
+
+    function renderAll() {
+        renderThumbnails();
+        renderPrintGrid();
+    }
+
+    async function handleFiles(files) {
+        const fileList = Array.from(files);
+        for (const file of fileList) {
+            if (!file.type.startsWith('image/')) continue;
+            const objUrl = URL.createObjectURL(file);
+            let shortName = file.name.length > 22 ? file.name.slice(0, 19) + '...' : file.name;
+            imagesArray.push({
+                id: nextId++,
+                url: objUrl,
+                name: shortName,
+            });
+        }
+        renderAll();
+    }
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            handleFiles(e.target.files);
+            fileInput.value = '';
+        }
+    });
+
+    function refreshLayout() {
+        updateGridCSSVariables();
+        renderPrintGrid(); // Neuaufbau des Rasters mit neuen Maßen
+    }
+    
+    cardSizeInput.addEventListener('input', refreshLayout);
+    cardGapInput.addEventListener('input', refreshLayout);
+    pageMarginInput.addEventListener('input', refreshLayout);
+    showCutlineCheckbox.addEventListener('change', updateCutlines);
+
+    // Download der HTML-Datei
+    document.getElementById('downloadHtmlBtn').addEventListener('click', function() {
+        const htmlContent = document.documentElement.outerHTML;
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'memory_karten_studio.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    // Initialisierung
+    updateGridCSSVariables();
+    renderAll();
+</script>
+</body>
+</html>
