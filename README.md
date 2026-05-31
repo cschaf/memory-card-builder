@@ -1,17 +1,25 @@
-# 🃏 Memory Card Builder
+# 🧸 Memory Karten Studio
 
-A browser-based tool to create printable memory card sheets (6×6 cm) with cut lines.
+A warm, beautiful browser tool for mothers to create printable memory card sheets (6×6 cm) with cut lines — perfect for playing memory with your kids.
 
-Upload your images, arrange the order, adjust card size and spacing, then print directly or save as PDF — each card gets a dashed cut line for easy scissor trimming.
+Upload your favourite photos, arrange them, adjust the size, and print — each card gets a dashed cut line for easy trimming.
 
 ## 🚀 Live Site
 
 **[cschaf.github.io/memory-card-builder](https://cschaf.github.io/memory-card-builder/)**
 
+## 🎨 Design
+
+- **Style**: Soft UI Evolution — warm, inviting, rounded shapes
+- **Palette**: Soft pink + lavender — feminine and nurturing
+- **Fonts**: [Amatic SC](https://fonts.google.com/specimen/Amatic+SC) (headings) + [Cabin](https://fonts.google.com/specimen/Cabin) (body) — handmade craft feel
+- **Mobile**: Fully responsive with adaptive print preview scaling
+- **Accessibility**: `prefers-reduced-motion` support, touch-friendly targets, WCAG AA contrast
+
 ## ✂️ Features
 
 - **Multi-image upload** — select multiple images at once (JPEG, PNG, WebP)
-- **Drag-free reordering** — move images up/down or delete them
+- **Reordering** — move images up/down or delete them
 - **Customizable layout** — card size, gap between cards, and page margin
 - **Dashed cut lines** — toggle on/off, 2 mm inside each card edge
 - **Auto-pagination** — 8 cards per A4 page (2 columns × 4 rows), new pages added automatically
@@ -28,7 +36,7 @@ Upload your images, arrange the order, adjust card size and spacing, then print 
 
 ## 📦 Offline Use
 
-Click **"💾 HTML-Datei herunterladen"** to save a self-contained HTML file — works offline in any browser.
+Click **"💾 Herunterladen"** to save a self-contained HTML file — works offline in any browser.
 
 ## 🔧 Development
 
